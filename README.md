@@ -26,6 +26,6 @@ func main() {
 	monitor.Start(ctx, os.Stdout)
 	defer monitor.Stop(ctx)
 
-	monitor.Signal()	// increments by 1
+	monitor.Signal(ctx)	// increments by 1
 }
 ```
