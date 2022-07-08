@@ -9,7 +9,12 @@ type NullMonitor struct {
      Monitor
 }
 
-func NewNullMonitor(ctx context.Context) (Monitor, error) {
+func init() {
+	ctx := context.Background()
+	RegisterMonitor(ctx, "null", NewNullMonitor)
+}
+
+func NewNullMonitor(ctx context.Context, uri string) (Monitor, error) {
      nm := &NullMonitor{}
      return nm, nil
 }

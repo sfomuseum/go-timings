@@ -7,6 +7,8 @@ import (
 	_ "log"
 	"sync/atomic"
 	"time"
+	"github.com/whosonfirst/iso8601duration"
+	"net/url"
 )
 
 // type CounterMonitor implements the Monitor interface providing a background timings mechanism that tracks incrementing events.
@@ -18,13 +20,38 @@ type CounterMonitor struct {
 	ticker  *time.Ticker
 }
 
-// NewCounterMonitor creates a new Monitor instance that will dispatch notifications using a time.Ticker and 'd'
-func NewCounterMonitor(ctx context.Context, d time.Duration) (Monitor, error) {
+func init() {
+	ctx := context.Background()
+	RegisterMonitor(ctx, "counter", NewCounterMonitor)
+}
 
+// NewCounterMonitor creates a new Monitor instance that will dispatch notifications using a time.Ticker and 'd'
+func NewCounterMonitor(ctx context.Context, uri string) (Monitor, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse URI, %w", err)
+	}
+
+	q := u.Query()
+
+	str_duration := q.Get("duration")
+
+	if str_duration == "" {
+		return nil, fmt.Errorf("Missing duration parameter, %w", err)
+	}
+
+	d, err := duration.FromString(str_duration)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse '%s', %w", str_duration, err)
+	}
+	
 	done_ch := make(chan bool)
 	count := int64(0)
 
-	ticker := time.NewTicker(d)
+	ticker := time.NewTicker(d.ToDuration())
 
 	t := &CounterMonitor{
 		done_ch: done_ch,

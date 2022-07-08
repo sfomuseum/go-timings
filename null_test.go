@@ -11,7 +11,7 @@ func TestNullMonitor(t *testing.T) {
 
 	ctx := context.Background()
 
-	m, err := NewNullMonitor(ctx)
+	m, err := NewMonitor(ctx, "null://")
 
 	if err != nil {
 		t.Fatalf("Failed to create monitor, %v", err)
