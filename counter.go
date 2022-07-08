@@ -7,7 +7,7 @@ import (
 	_ "log"
 	"sync/atomic"
 	"time"
-	"github.com/whosonfirst/iso8601duration"
+	"github.com/sfomuseum/iso8601duration"
 	"net/url"
 )
 
