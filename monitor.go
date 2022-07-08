@@ -2,13 +2,12 @@ package timings
 
 import (
 	"context"
-	"io"
 	"fmt"
 	"github.com/aaronland/go-roster"
+	"io"
 	"net/url"
 	"sort"
 	"strings"
-	
 )
 
 // type Monitor provides a common interface for timings-based monitors
@@ -21,6 +20,7 @@ type Monitor interface {
 	Signal(context.Context, ...interface{}) error
 }
 
+// monitors is a `aaronland/go-roster.Roster` instance used to maintain a list of registered `Monitor` initialization functions.
 var monitors roster.Roster
 
 // MonitorInitializationFunc is a function defined by individual monitor package and used to create

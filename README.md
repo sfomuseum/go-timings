@@ -13,15 +13,13 @@ import (
        "context"
        "github.com/sfomuseum/go-timings"
        "os"       
-       "time"
 )
 
 func main() {
 
 	ctx := context.Background()
 	
-	d := time.Second * 60
-	monitor, _ := timings.NewCounterMonitor(ctx, d)
+	monitor, _ := timings.NewMonitor(ctx, "counter://PT60S)
 
 	monitor.Start(ctx, os.Stdout)
 	defer monitor.Stop(ctx)

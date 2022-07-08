@@ -11,7 +11,7 @@ func TestCounterMonitor(t *testing.T) {
 
 	ctx := context.Background()
 
-	m, err := NewMonitor(ctx, "counter://?duration=PT1S")
+	m, err := NewMonitor(ctx, "counter://PT1S")
 
 	if err != nil {
 		t.Fatalf("Failed to create monitor, %v", err)
