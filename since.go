@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-// type SinceMonitor implements the `Monitor` interface providing a background timings mechanism that tracks incrementing events.
+// type SinceMonitor implements the `Monitor` interface providing a background timings mechanism that tracks the duration of time
+// between events.
 type SinceMonitor struct {
 	Monitor
 	done_ch   chan bool
@@ -21,10 +22,14 @@ type SinceMonitor struct {
 	mu        *sync.RWMutex
 }
 
+// SinceResponse is a struct containing information related to a "since" timing event.
 type SinceResponse struct {
-	Message   string `json:"message"`
-	Duration  string `json:"duration"`
-	Timestamp int64  `json:"timestamp"`
+	// Message is an optional string that was included with a `Signal` event
+	Message string `json:"message"`
+	// Duration is the string representation of a `time.Duuration` which is the amount of time that elapsed between `Signal` events
+	Duration string `json:"duration"`
+	// Timestamp is the Unix timestamp when the `SinceResponse` was created
+	Timestamp int64 `json:"timestamp"`
 }
 
 func init() {
