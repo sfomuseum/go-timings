@@ -88,16 +88,23 @@ func TestSinceMonitor(t *testing.T) {
 			select {
 			case t := <-ticker.C:
 
-				msg := fmt.Sprintf("Send signal at %v", t)
-				err = m.Signal(ctx, msg)
+				label := fmt.Sprintf("testing %d", t.Unix())
+
+				err = m.Signal(ctx, SinceStart, label)
 
 				if err != nil {
-					err_ch <- err
+					err_ch <- fmt.Errorf("Failed to start since signal, %w", err)
+					return
+				}
+
+				err = m.Signal(ctx, SinceStop, label)
+
+				if err != nil {
+					err_ch <- fmt.Errorf("Failed to stop since signal, %w", err)
 					return
 				}
 
 			case <-after:
-				fmt.Println("DONE 1")
 				return
 			}
 		}
