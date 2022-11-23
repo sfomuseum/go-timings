@@ -44,6 +44,11 @@ func init() {
 	RegisterMonitor(ctx, "since", NewSinceMonitor)
 }
 
+// String() returns a string representation of the response.
+func (s SinceResponse) String() string {
+	return fmt.Sprintf("%d %s %s", s.Timestamp, s.Label, s.Duration)
+}
+
 // NewSinceMonitor creates a new `SinceMonitor` instance that will dispatch notifications using a time.Ticker configured
 // by 'uri' which is expected to take the form of:
 //
