@@ -11,54 +11,62 @@ func TestCounterMonitor(t *testing.T) {
 
 	ctx := context.Background()
 
-	m, err := NewMonitor(ctx, "counter://PT1S")
-
-	if err != nil {
-		t.Fatalf("Failed to create monitor, %v", err)
+	tests := []string{
+		"counter://PT1S",
+		"counter://PT1S?total=10",
 	}
 
-	err = m.Start(ctx, os.Stdout)
+	for _, uri := range tests {
 
-	if err != nil {
-		t.Fatalf("Failed to start monitor, %v", err)
-	}
+		m, err := NewMonitor(ctx, uri)
 
-	done_ch := make(chan bool)
+		if err != nil {
+			t.Fatalf("Failed to create monitor, %v", err)
+		}
 
-	ticker := time.NewTicker(time.Second * 2)
-	after := time.After(10 * time.Second)
+		err = m.Start(ctx, os.Stdout)
 
-	var signal_err error
+		if err != nil {
+			t.Fatalf("Failed to start monitor, %v", err)
+		}
 
-	go func() {
+		done_ch := make(chan bool)
 
-		for {
-			select {
-			case <-ticker.C:
-				err = m.Signal(ctx)
+		ticker := time.NewTicker(time.Second * 2)
+		after := time.After(10 * time.Second)
 
-				if err != nil {
-					signal_err = err
+		var signal_err error
+
+		go func() {
+
+			for {
+				select {
+				case <-ticker.C:
+					err = m.Signal(ctx)
+
+					if err != nil {
+						signal_err = err
+						done_ch <- true
+						return
+					}
+
+				case <-after:
 					done_ch <- true
 					return
 				}
-
-			case <-after:
-				done_ch <- true
-				return
 			}
+		}()
+
+		<-done_ch
+
+		if signal_err != nil {
+			t.Fatalf("There was a problem signaling the monitor, %v", signal_err)
 		}
-	}()
 
-	<-done_ch
+		err = m.Stop(ctx)
 
-	if signal_err != nil {
-		t.Fatalf("There was a problem signaling the monitor, %v", signal_err)
-	}
-
-	err = m.Stop(ctx)
-
-	if err != nil {
-		t.Fatalf("Failed to stop monitor, %v", err)
+		if err != nil {
+			t.Fatalf("Failed to stop monitor, %v", err)
+		}
 	}
 }
